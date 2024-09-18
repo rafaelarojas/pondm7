@@ -1,13 +1,13 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
-WORKDIR /backend
+WORKDIR /src/backend
 
-COPY ./requirements.txt /backend/requirements.txt
+COPY requirements.txt ./
 
-RUN pip install --no-cache-dir -r /backend/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /backend
+COPY . .
 
 EXPOSE 8000
 
-CMD ["uvicorn", "main:backend", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

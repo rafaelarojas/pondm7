@@ -1,31 +1,4 @@
-version: '3.8'
-
 services:
-  backend:
-    build: ./backend
-    container_name: backend
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - db
-      - pocketbase
-    environment:
-      - DATABASE_URL=postgresql://your_user:your_password@db:5432/crypto_db
-
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    tty: true
-    environment:
-      - VITE_BACKEND_URL=http://localhost:8000
-    depends_on:
-      - backend
-
   db:
     image: postgres:latest
     container_name: postgres_db
@@ -34,16 +7,28 @@ services:
       POSTGRES_PASSWORD: your_password
       POSTGRES_DB: crypto_db
     volumes:
-      - ./database:/var/lib/postgresql/data
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
+  backend:
+    build: ./src/backend
+    container_name: backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./src/frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+
   pocketbase:
-    image: pocketbase/pocketbase:latest
+    build: ./src/pocketbase
     container_name: pocketbase
     volumes:
-      - ./pocketbase/pb_data:/pb_data
+      - ./src/pocketbase/pb_data:/pb_data
     ports:
       - "8090:8090"
-    command: ["serve", "--http=0.0.0.0:8090"]
