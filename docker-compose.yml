@@ -3,8 +3,8 @@ services:
     image: postgres:latest
     container_name: postgres_db
     environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_USER: ponderada_crypto
+      POSTGRES_PASSWORD: 1a2b3c4d5e
       POSTGRES_DB: crypto_db
     volumes:
       - ./pg_data:/var/lib/postgresql/data
