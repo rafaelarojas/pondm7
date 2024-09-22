@@ -3,11 +3,11 @@ services:
     image: postgres:latest
     container_name: postgres_db
     environment:
-      POSTGRES_USER: ponderada_crypto
+      POSTGRES_USER: rafa
       POSTGRES_PASSWORD: 1a2b3c4d5e
       POSTGRES_DB: crypto_db
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      - ./src/database/pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
