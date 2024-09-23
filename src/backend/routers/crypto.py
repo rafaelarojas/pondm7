@@ -1,68 +1,45 @@
-from fastapi import APIRouter, HTTPException
-from utils.pocketbase import load_model_from_pocketbase
-from utils.logs import logger
-import numpy as np
-import pandas as pd
-import yfinance as yf
-from sklearn.preprocessing import MinMaxScaler
+from fastapi import APIRouter, HTTPException, Response 
+import requests
 
 router = APIRouter()
 
-@router.get("/predict/btc/gru")
-async def predict_btc_gru():
-    return await predict_price("BTC", "gru")
+# URL base para o PocketBase
+BASE_URL = "http://pocketbase:8090/api/files/u1owy14iqjskm4w/n5rubw8srjb4yec"
 
-@router.get("/predict/sol/gru")
-async def predict_sol_gru():
-    return await predict_price("SOL", "gru")
 
-@router.get("/predict/btc/lstm")
-async def predict_btc_lstm():
-    return await predict_price("BTC", "lstm")
+# Função para buscar o modelo no PocketBase
+def fetch_model(model_filename: str):
+    url = f"{BASE_URL}/{model_filename}"
+    response = requests.get(url)
 
-@router.get("/predict/sol/lstm")
-async def predict_sol_lstm():
-    return await predict_price("SOL", "lstm")
+    if response.status_code == 200:
+        # Retornar o conteúdo binário como uma resposta de bytes
+        return Response(content=response.content, media_type="application/octet-stream")
+    else:
+        raise HTTPException(status_code=response.status_code, detail="Model not found")
 
-async def predict_price(crypto: str, model_type: str):
-    try:
-        logger.info(f"Iniciando previsão para {crypto} usando {model_type.upper()}")
+# Rotas para cada modelo específico
+@router.get("/model/gru/btc")
+async def get_gru_btc_model():
+    model_filename = "model_gru_btc_KbdmC8oKW3.h5"
+    return fetch_model(model_filename)
 
-        model = load_model_from_pocketbase(crypto, model_type)
-        logger.info(f"Modelo {model_type.upper()} para {crypto} carregado com sucesso")
+@router.get("/model/lstm/btc")
+async def get_lstm_btc_model():
+    model_filename = "model_lstm_btc_baK6Tr7WtC.h5"
+    return fetch_model(model_filename)
 
-        ticker = f"{crypto}-USD"
-        data = yf.Ticker(ticker).history(period="2y", interval="1h")[["Close"]]
+@router.get("/model/gru/sol")
+async def get_gru_sol_model():
+    model_filename = "model_gru_sol_1afV8Ye8uC.h5"
+    return fetch_model(model_filename)
 
-        predictions, dates = generate_predictions(model, data)
-        
-        logger.info(f"Previsões para {crypto} com {model_type.upper()} geradas com sucesso")
-        
-        return {
-            "crypto": crypto,
-            "model_type": model_type,
-            "predictions": predictions,
-            "dates": dates
-        }
-    except Exception as e:
-        logger.error(f"Erro ao processar a previsão: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erro no processamento da previsão")
+@router.get("/model/lstm/sol")
+async def get_lstm_sol_model():
+    model_filename = "model_lstm_sol_JR3OEga8oO.h5"
+    return fetch_model(model_filename)
 
-def generate_predictions(model, data):
-    scaler = MinMaxScaler()
-    scaled_data = scaler.fit_transform(data)
-
-    sequence_length = 60
-    X = []
-    for i in range(sequence_length, len(scaled_data)):
-        X.append(scaled_data[i-sequence_length:i, 0])
-
-    X = np.array(X).reshape((len(X), sequence_length, 1))
-
-    predicted_prices = model.predict(X)
-
-    predicted_prices = scaler.inverse_transform(predicted_prices)
-
-    dates = pd.date_range(start=data.index[-1] + pd.Timedelta(hours=1), periods=len(predicted_prices), freq='H').strftime('%Y-%m-%d %H:%M:%S').tolist()
-
-    return predicted_prices.flatten().tolist(), dates
+# Exemplo de rota para verificar o status do sistema
+@router.get("/status")
+async def get_status():
+    return {"status": "Sistema de Previsão de Criptomoedas está ativo"}

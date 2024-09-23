@@ -10,6 +10,8 @@ services:
       - ./src/database/pg_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - crypto_network
 
   backend:
     build: ./src/backend
@@ -18,12 +20,16 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - crypto_network
 
   frontend:
     build: ./src/frontend
     container_name: frontend
     ports:
       - "3000:3000"
+    networks:
+      - crypto_network
 
   pocketbase:
     build: ./src/pocketbase
@@ -32,3 +38,9 @@ services:
       - ./src/pocketbase/pb_data:/pb_data
     ports:
       - "8090:8090"
+    networks:
+      - crypto_network
+
+networks:
+  crypto_network:
+    driver: bridge

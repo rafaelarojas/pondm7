@@ -1,61 +1,31 @@
-from datetime import datetime
-from sqlalchemy.orm import Session
-from models import Prediction, Model, Features, Values
+from tensorflow.keras.models import load_model
+from utils.pocketbase import download_model_from_pocketbase
 
-def add_prediction(db: Session, id_modelo: str, knr: str, prediction_result: int, real_result: int, 
-                   best_buy_date: datetime, best_sell_date: datetime):
-    new_prediction = Prediction(
-        ID=f"pred_{knr}_{datetime.utcnow().timestamp()}",
-        ID_modelo=id_modelo,
-        KNR=knr,
-        Prediction_result=prediction_result,
-        Real_result=real_result,
-        best_buy_date=best_buy_date,
-        best_sell_date=best_sell_date
-    )
-    db.add(new_prediction)
-    db.commit()
-    db.refresh(new_prediction)
-    return new_prediction
+def load_model_from_pocketbase(crypto: str, model_type: str):
+    """Carregar o modelo GRU ou LSTM do PocketBase para a criptomoeda especificada."""
+    try:
+        # Determinar o nome do arquivo do modelo com base na criptomoeda e no tipo de modelo
+        if crypto == "btc":
+            if model_type == "gru":
+                model_name = "model_gru_btc_KbdmC8oKW3.h5"
+            elif model_type == "lstm":
+                model_name = "model_lstm_btc_baK6Tr7WtC.h5"
+        elif crypto == "sol":
+            if model_type == "gru":
+                model_name = "model_gru_sol_1afV8Ye8uC.h5"
+            elif model_type == "lstm":
+                model_name = "model_lstm_sol_JR3OEga8oO.h5"
+        else:
+            raise ValueError("Criptomoeda ou tipo de modelo inválido.")
 
-def add_model(db: Session, id_modelo: str, model_name: str, url_modelo: str):
-    new_model = Model(
-        ID_modelo=id_modelo,
-        model=model_name,
-        URL_modelo=url_modelo
-    )
-    db.add(new_model)
-    db.commit()
-    db.refresh(new_model)
-    return new_model
+        # Baixar o modelo da PocketBase
+        model_path = download_model_from_pocketbase(model_name)
 
-def add_feature(db: Session, feature_name: str):
-    new_feature = Features(
-        name_feature=feature_name
-    )
-    db.add(new_feature)
-    db.commit()
-    db.refresh(new_feature)
-    return new_feature
+        # Carregar o modelo utilizando Keras
+        model = load_model(model_path)
 
-def add_value(db: Session, id_feature: int, id_prediction: str, id_modelo: str, value_feature: float):
-    new_value = Values(
-        ID_feature=id_feature,
-        ID=id_prediction,
-        ID_modelo=id_modelo,
-        value_feature=value_feature
-    )
-    db.add(new_value)
-    db.commit()
-    db.refresh(new_value)
-    return new_value
+        return model
 
-def get_predictions_by_model(db: Session, id_modelo: str):
-    return db.query(Prediction).filter(Prediction.ID_modelo == id_modelo).all()
-
-def get_prediction_by_id(db: Session, prediction_id: str):
-    return db.query(PPrediction).filter(Prediction.ID == prediction_id).first()
-
-def get_best_dates_for_model(db: Session, id_modelo: str):
-    predictions = db.query(Prediction).filter(Prediction.ID_modelo == id_modelo).all()
-    return [{"best_buy_date": p.best_buy_date, "best_sell_date": p.best_sell_date} for p in predictions]
+    except Exception as e:
+        print(f"Erro ao carregar o modelo: {str(e)}")
+        raise
