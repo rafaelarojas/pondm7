@@ -16,6 +16,8 @@ services:
   backend:
     build: ./src/backend
     container_name: backend
+    environment:
+      DATABASE_URL: postgresql+psycopg2://rafa:1a2b3c4d5e@db:5432/crypto_db
     ports:
       - "8000:8000"
     depends_on:
