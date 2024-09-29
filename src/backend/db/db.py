@@ -1,17 +1,34 @@
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, DateTime, create_engine
+from sqlalchemy.orm import declarative_base, sessionmaker
+import datetime
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg2://rafa:1a2b3c4d5e@db:5432/crypto_db")
+DATABASE_URL = "postgresql://rafa:aaaa@db:5432/crypto_db"
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-def get_db():
-    db = SessionLocal()
+class Log(Base):
+    __tablename__ = "logs"
+    id = Column(Integer, primary_key=True, index=True)
+    message = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
+
+# Criação do engine e sessão
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def create_db_and_tables():
+    """Cria as tabelas no banco de dados."""
+    Base.metadata.create_all(bind=engine)
+
+def save_log(message):
+    """Salva uma nova entrada de log no banco de dados."""
+    session = SessionLocal()
     try:
-        yield db
+        log_entry = Log(message=message)
+        session.add(log_entry)
+        session.commit()
+    except Exception as e:
+        session.rollback()  # Reverte a transação em caso de erro
+        print(f"Erro ao salvar o log: {e}")  # Log de erro ou tratamento apropriado
     finally:
-        db.close()
+        session.close()  # Garante que a sessão será fechada

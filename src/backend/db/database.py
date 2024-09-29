@@ -1,43 +1,27 @@
-from sqlalchemy import create_engine, Column, String, Float, Integer, DateTime, ForeignKey, PrimaryKeyConstraint
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from db.db import Base
+from sqlalchemy import create_engine, Column, String, Integer, DateTime
+from sqlalchemy.orm import declarative_base, sessionmaker
+import datetime
+import os
 
-class Prediction(Base):
-    __tablename__ = "Prediction"
-    ID = Column(String, primary_key=True, index=True)
-    ID_modelo = Column(String, ForeignKey('Model.ID_modelo'), index=True)
-    KNR = Column(String)
-    Prediction_result = Column(Integer)
-    Real_result = Column(Integer)
-    best_buy_date = Column(DateTime)
-    best_sell_date = Column(DateTime)
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psy://rafa:aaaa@db:5432/crypto_db")
 
-    model = relationship('Model')
-    values = relationship('Values', back_populates='prediction')
+Base = declarative_base()
 
-class Features(Base):
-    __tablename__ = "Features"
-    ID_feature = Column(Integer, primary_key=True)
-    name_feature = Column(String)
+class Log(Base):
+    __tablename__ = "logs"
+    id = Column(Integer, primary_key=True, index=True)
+    message = Column(String, nullable=False)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
-class Model(Base):
-    __tablename__ = "Model"
-    ID_modelo = Column(String, primary_key=True, index=True)
-    model = Column(String)
-    URL_modelo = Column(String)
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-class Values(Base):
-    __tablename__ = "Values"
-    ID_feature = Column(Integer, ForeignKey('Features.ID_feature'), index=True)
-    ID = Column(String, ForeignKey('Prediction.ID'), index=True)
-    ID_modelo = Column(String, ForeignKey('Model.ID_modelo'), index=True)
-    value_feature = Column(Float)
+def create_db_and_tables():
+    Base.metadata.create_all(bind=engine)
 
-    __table_args__ = (
-        PrimaryKeyConstraint('ID_feature', 'ID', 'ID_modelo'),
-    )
-
-    feature = relationship('Features')
-    model = relationship('Model')
-    prediction = relationship('Prediction', back_populates='values')
+def save_log(message):
+    session = SessionLocal()
+    log_entry = Log(message=message)
+    session.add(log_entry)
+    session.commit()
+    session.close()

@@ -1,8 +1,7 @@
 from fastapi import FastAPI
-from routers import crypto
+from routes import prediction
 from utils.logs import setup_logger
-from db.db import Base, engine
-from models import models
+from db.db import create_db_and_tables
 
 app = FastAPI()
 
@@ -10,8 +9,7 @@ logger = setup_logger()
 
 @app.on_event("startup")
 async def startup_event():
-    logger.info("Sistema de Previsão de Criptomoedas Iniciado")
-    
-    models.Base.metadata.create_all(bind=engine)
+    logger.info("Sistema Iniciado")
+    create_db_and_tables()
 
-app.include_router(crypto.router)
+app.include_router(prediction.router)

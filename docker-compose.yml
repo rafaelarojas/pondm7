@@ -1,10 +1,10 @@
 services:
   db:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: db
     environment:
       POSTGRES_USER: rafa
-      POSTGRES_PASSWORD: 1a2b3c4d5e
+      POSTGRES_PASSWORD: aaaa
       POSTGRES_DB: crypto_db
     volumes:
       - ./src/database/pg_data:/var/lib/postgresql/data
@@ -17,7 +17,7 @@ services:
     build: ./src/backend
     container_name: backend
     environment:
-      DATABASE_URL: postgresql+psycopg2://rafa:1a2b3c4d5e@db:5432/crypto_db
+      DATABASE_URL: postgresql+psy://rafa:aaaa@db:5432/crypto_db
     ports:
       - "8000:8000"
     depends_on:
@@ -30,16 +30,6 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
-    networks:
-      - crypto_network
-
-  pocketbase:
-    build: ./src/pocketbase
-    container_name: pocketbase
-    volumes:
-      - ./src/pocketbase/pb_data:/pb_data
-    ports:
-      - "8090:8090"
     networks:
       - crypto_network
 
