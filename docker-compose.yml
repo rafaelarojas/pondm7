@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:latest
@@ -17,7 +19,7 @@ services:
     build: ./src/backend
     container_name: backend
     environment:
-      DATABASE_URL: postgresql+psy://rafa:aaaa@db:5432/crypto_db
+      DATABASE_URL: postgresql+psycopg2://rafa:aaaa@db:5432/crypto_db
     ports:
       - "8000:8000"
     depends_on:
@@ -28,8 +30,10 @@ services:
   frontend:
     build: ./src/frontend
     container_name: frontend
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
     ports:
-      - "3000:3000"
+      - "8501:8501"
     networks:
       - crypto_network
 

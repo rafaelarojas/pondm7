@@ -11,6 +11,17 @@ from db.db import Log
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:8501",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 def load_crypto_data(crypto_csv):
     data = pd.read_csv(crypto_csv, encoding='utf-8', parse_dates=['Datetime'], index_col='Datetime')
     close_prices = data[["Close"]]
@@ -137,11 +148,3 @@ def get_sol_lstm_predictions():
         "best_sell_hour": future_dates[sell_hour_index],
         "best_buy_hour": future_dates[buy_hour_index],
     }
-
-
-@app.get("/logs")
-def get_logs():
-    session = SessionLocal()
-    logs = session.query(Log).all()
-    session.close()
-    return [{"id": log.id, "message": log.message, "timestamp": log.timestamp} for log in logs]

@@ -12,7 +12,6 @@ class Log(Base):
     message = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
-# Criação do engine e sessão
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -28,7 +27,7 @@ def save_log(message):
         session.add(log_entry)
         session.commit()
     except Exception as e:
-        session.rollback()  # Reverte a transação em caso de erro
-        print(f"Erro ao salvar o log: {e}")  # Log de erro ou tratamento apropriado
+        session.rollback() 
+        print(f"Erro ao salvar o log: {e}")
     finally:
-        session.close()  # Garante que a sessão será fechada
+        session.close()

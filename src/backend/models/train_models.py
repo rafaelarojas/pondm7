@@ -13,7 +13,6 @@ def retrain_models():
     if btc_data.empty or sol_data.empty:
         raise ValueError("Não foi possível carregar os dados do Yahoo Finance.")
 
-    # Pré-processamento para BTC
     btc_data = btc_data[["Close"]]
     btc_scaler = MinMaxScaler(feature_range=(0, 1))
     btc_scaled_data = btc_scaler.fit_transform(btc_data)
