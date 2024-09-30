@@ -42,8 +42,8 @@ with tab1:
     st.header("BTC-USD")
     st.image("https://cryptologos.cc/logos/bitcoin-btc-logo.png", width=50)
 
-    btc_data = fetch_predictions("http://localhost:8000/btc/gru") 
-    btc_lstm_data = fetch_predictions("http://localhost:8000/btc/lstm")
+    btc_data = fetch_predictions("http://backend:8000/btc/gru") 
+    btc_lstm_data = fetch_predictions("http://backend:8000/btc/lstm")
     
     st.subheader("$ " + str(btc_data['predictions'][-1]))
     st.write("Time to Sell: ", btc_data['best_sell_hour'])
@@ -70,8 +70,8 @@ with tab2:
     st.header("SOL-USD")
     st.image("https://cryptologos.cc/logos/solana-sol-logo.png", width=50)
 
-    sol_data = fetch_predictions("http://localhost:8000/sol/gru")
-    sol_lstm_data = fetch_predictions("http://localhost:8000/sol/lstm")
+    sol_data = fetch_predictions("http://backend:8000/sol/gru")
+    sol_lstm_data = fetch_predictions("http://backend:8000/sol/lstm")
     
     st.subheader("$ " + str(sol_data['predictions'][-1]))
     st.write("Time to Sell: ", sol_data['best_sell_hour'])

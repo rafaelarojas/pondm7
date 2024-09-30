@@ -13,3 +13,10 @@ Durante essa fase, foi possível identificar que os dados estavam organizados em
 Além disso, foram exploradas outras características importantes dos dados, como volume de negociação, valor de abertura, fechamento, máximas e mínimas diárias, entre outros indicadores que podem influenciar o comportamento futuro das criptomoedas. A correlação entre essas variáveis foi analisada para entender melhor como elas interagem e como podem contribuir para as previsões.
 
 A partir dessa exploração inicial, o próximo passo foi avaliar o comportamento dos dados utilizando três modelos distintos de séries temporais: LSTM (Long Short-Term Memory), ARIMA (AutoRegressive Integrated Moving Average) e GRU (Gated Recurrent Unit). Cada um desses modelos foi escolhido por suas características específicas de processamento de dados temporais e capacidade de captura de padrões em séries históricas.
+
+Neste contexto, o modelo ARIMA não possuiu um comportamento adequado, deixou as predições com um valor constante, o que não é adequado visto a volatividade que o mercado de criptomoedas da fato é. Sendo assim, para este projeto, foram utilizados os seguintes modelos:
+
+- Modelo GRU para prever Bitcoin
+- Modelo LSTM para prever Bitcoin
+- Modelo GRU para prever Solana
+- Modelo LSTM para prever Solana
