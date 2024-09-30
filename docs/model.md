@@ -17,6 +17,25 @@ A partir dessa exploração inicial, o próximo passo foi avaliar o comportament
 Neste contexto, o modelo ARIMA não possuiu um comportamento adequado, deixou as predições com um valor constante, o que não é adequado visto a volatividade que o mercado de criptomoedas da fato é. Sendo assim, para este projeto, foram utilizados os seguintes modelos:
 
 - Modelo GRU para prever Bitcoin
+![alt text](images/btc_gru1.png)
+![alt text](images/btc_gru2.png)
+![alt text](images/btc_gru3.png)
+
 - Modelo LSTM para prever Bitcoin
+![alt text](images/btc_lstm_1.png)
+![alt text](images/btc_lstm2.png)
+![alt text](images/btc_lstm3.png)
+
 - Modelo GRU para prever Solana
+![alt text](images/sol_gru1.png)
+![alt text](images/sol_gru2.png)
+![alt text](images/sol_gru3.png)
+
 - Modelo LSTM para prever Solana
+![alt text](images/sol_lstm1.png)
+![alt text](images/sol_lstm2.png)
+![alt text](images/sol_lstm3.png)
+
+
+
+
