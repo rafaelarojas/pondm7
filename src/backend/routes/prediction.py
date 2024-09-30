@@ -11,15 +11,6 @@ from db.db import Log
 
 app = FastAPI()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-
 def load_crypto_data(crypto_csv):
     data = pd.read_csv(crypto_csv, encoding='utf-8', parse_dates=['Datetime'], index_col='Datetime')
     close_prices = data[["Close"]]
